@@ -1,0 +1,431 @@
+FORMAT: 1A
+HOST: http://www.go4logistics.com
+
+# TMS API
+This API is part of Go4Logistics Transport Management System. Using the API, you can retrieve and manage transport related master data as well as manage the transport planning. 
+
+# Group Master Data
+Work with master (aka reference) data like trucks and divers.
+
+## Drivers Collection [/drivers]
+### {Preliminary} - List all Drivers [GET]
++ Response 200 (application/json)
+
+        [{
+          "id": 1, "name": "Julia Green"
+        }, {
+          "id": 2, "name": "George Brown"
+        }]
+
+### {Preliminary} - Create a Driver [POST]
++ Request (application/json)
+
+        { "name": "Walter White" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "name": "Walter White" }
+
+## Driver [/drivers/{id}]
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Driver to perform action with. 
+
+### Retrieve a Driver [GET]
++ Response 200 (application/json)
+
+        { "id": 2, "name": "George Brown" }
+
+### {Preliminary} - Remove a Driver [DELETE]
++ Response 204
+
+## Trucks Collection [/trucks]
+### {Preliminary} - List all Trucks [GET]
++ Response 200 (application/json)
+
+        [{
+          "id": 1, "licenseplate": "1-EJD-704"
+        }, {
+          "id": 2, "licenseplate": "2-BTX-887"
+        }]
+
+### {Preliminary} - Create a Truck [POST]
++ Request (application/json)
+
+        { "licenseplate": "1-HGF-897" }
+
++ Response 201 (application/json)
+
+        { "id": 3, "licenseplate": "1-HGF-897" }
+
+## Truck [/trucks/{id}]
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Truck to perform action with. 
+
+### Retrieve a Truck [GET]
++ Response 200 (application/json)
+
+        { "id": 2, "licenseplate": "2-BTX-887" }
+
+### {Preliminary} - Remove a Truck [DELETE]
++ Response 204
+
+## Addresses Collection [/addresses]
+### {Preliminary} - List all Addresses [GET]
++ Response 200 (application/json)
+
+        [{
+          "id": 1, "street": "kerkstraat", "number": 14
+        }, {
+          "id": 2, "street": "potstraat", "number": 123
+        }]
+
+### {Preliminary} - Search for Addresses [GET /addresses{?wizardId]
++ Parameters
+    + wizardId (required, number, `4`) ... Search for an address given a `wizardId`.
+
++ Response 200 (application/json)
+
+        [{
+          "id": 1, "street": "kerkstraat", "number": 14
+        }, {
+          "id": 2, "street": "potstraat", "number": 123
+        }]
+
+### {Preliminary} - Create a Address [POST]
++ Request (application/json)
+
+        { "street": "zomerstraat", "number": 2 }
+
++ Response 201 (application/json)
+
+        { "id": 3, "street": "zomerstraat", "number": 2 }
+
+## Address [/addresses/{id}]
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Address to perform action with. 
+
+### Retrieve a Address [GET]
++ Response 200 (application/json)
+
+        { "id": 1, "street": "kerkstraat", "number": 14 }
+
+### {Preliminary} - Remove a Address [DELETE]
++ Response 204
+
+# Group Planning
+Below are the features in the TMS API to work with planning information as well as to manage the planning itself.
+
+There are a few concepts to learn here. Planning in the transport business is done by booking a Transport Order for a Driver and his Truck for a given haulier. Transport Orders are further divided into planning blocks.
+
+## TruckAndDrivers Collection [/truckAndDrivers]
+
+In TMS Trucks are linked to Drivers and form together a whole. Planning transports is always for a given Truck & Driver combination.    
+
+### {Preliminary} - List all TruckAndDrivers [GET]
++ Response 200 (application/json)
+
+        [{
+          "id": 1, "description": "xyz", "type": "t1", "truckId": 1, "driverId":1, "coDriverId":2, "equipmentType":"et1", "group": "all", "zone":"north", "status":"unassigned"
+        }, {
+          "id": 2, "description": "qya", "type": "t2", "truckId": 2, "driverId":3, "coDriverId":4, "equipmentType":"et3", "group": "all", "zone":"north", "status":"unassigned"
+        }]
+
+### Search for TruckAndDrivers [GET /truckAndDrivers{?startDate,endDate,group,zone,status}]
++ Parameters
+    + startDate (required, number, `20150912`) ... The `startDate` to search for TruckAndDrivers given a certain `status`.
+    + endDate (required, number, `20150915`) ... The `endDate` to search for TruckAndDrivers given a certain `status`. 
+    + group (optional, string, `all`) ... Specify a `group` to limit the search for TruckAndDrivers. Default value is:`all`.
+    + zone (optional, string, `north`) ... Specify a `zone` to limit the search for TruckAndDrivers. Default value is:`belgium`.
+    + status (optional, enum[string])
+        Specify the status of the TruckAndDriver for the search. Default value is `unassigned`
+        + Default: `unassigned`
+        + Members
+            + `assigned`
+            + `unassigned`
+
++ Response 200 (application/json)
+
+        [{
+          "id": 1, "description": "xyz", "type": "t1", "truckId": 1, "driverId":1, "coDriverId":2, "equipmentType":"et1", "group": "all", "zone":"north", "status":"unassigned"
+        }, {
+          "id": 2, "description": "qya", "type": "t2", "truckId": 2, "driverId":3, "coDriverId":4, "equipmentType":"et3", "group": "all", "zone":"north", "status":"unassigned"
+        }]
+
+### {Preliminary} - Create a TruckAndDriver [POST]
++ Request (application/json)
+
+        { "description": "abc", "type": "t4", "truckId": 8, "driverId":3, "coDriverId":5, "equipmentType":"et5", "group": "all", "zone":"north"}
+
++ Response 201 (application/json)
+
+        { "id": 1, "description": "abc", "type": "t4", "truckId": 8, "driverId":3, "coDriverId":5, "equipmentType":"et5", "group": "all", "zone":"north", "status":"unassigned" }
+
+## TruckAndDriver [/truckAndDrivers/{id}]
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the TruckAndDriver to perform action with. 
+
+### Retrieve a TruckAndDriver [GET]
++ Response 200 (application/json)
+
+        { "id": 1, "description": "xyz", "type": "t1", "truckId": 1, "driverId":1, "coDriverId":2, "equipmentType":"et1", "group": "all", "zone":"north", "status":"unassigned" }
+
+### {Preliminary} - Remove a TruckAndDriver [DELETE]
++ Response 204
+
+## TransportOrders Collection [/transportOrders]
+
+Manage TO's or Transport Orders.
+
+### {Preliminary} - List all TransportOrders [GET]
++ Response 200 (application/json)
+
+        [{
+          "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486"
+        }, {
+          "id": "TO15-036327", "info": "Start ZWIJNDRECHT-Out KALO-Unload ZAVENTEM", "reference": "SMJ/RAU/88369/25069"
+        }]
+
+### Search for TransportOrders [GET /transportOrders{?startDate,endDate,group,zone,status}]
++ Parameters
+    + startDate (required, number, `20150912`) ... The `startDate` to search for TransportOrders given a certain `status`.
+    + endDate (required, number, `20150915`) ... The `endDate` to search for TransportOrders given a certain `status`. 
+    + group (optional, string, `all`) ... Specify a `group` to limit the search for TransportOrders. Default value is:`all`.
+    + zone (optional, string, `north`) ... Specify a `zone` to limit the search for TransportOrders. Default value is:`belgium`.
+    + status (optional, enum[string])
+        Specify the status of the TransportOrders for the search. Default value is `unassigned`
+        + Default: `planned`
+        + Members
+            + `created`
+            + `toPlan`
+            + `prePlan`
+            + `planned`
+            + `inProgress`
+            + `closed`
+
++ Response 200 (application/json)
+
+        [{
+          "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486"
+        }, {
+          "id": "TO15-036327", "info": "Start ZWIJNDRECHT-Out KALO-Unload ZAVENTEM", "reference": "SMJ/RAU/88369/25069"
+        }]
+
+### Create a TransportOrder [POST]
++ Request (application/json)
+
+        { "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
++ Response 201 (application/json)
+
+        { "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
+
+## TransportOrder [/transportOrders/{id}]
++ Parameters
+    + id (required, string, `TO15-036568`) ... The `id` of the TransportOrder to perform action with. 
+
+### Retrieve a TransportOrder [GET]
++ Response 200 (application/json)
+
+        { "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
+### Update a TransportOrder [PUT]
++ Request (application/json)
+
+        { "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
++ Response 200
+
+        { "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
+### Unplan a TransportOrder [POST /transportOrders/{id}/unplan]
++ Response 204
+
+### Send TransportOrder [POST /transportOrders/{id}/send]
++ Request (application/json)
+        
+        { "truckAndDriverId": "2", "haulierId": "4" }
+
++ Response 204
+
+### Recall TransportOrders [POST /transportOrders/{id}/recall]
++ Response 204
+
+
+### Remove a TransportOrder [DELETE]
++ Response 204
+
+## PlanningBlocks Collection [/planningBlocks]
+
+Manage planning blocks. These are the smallest plannable units in transport planning.
+
+### {Preliminary} - List all PlanningBlocks [GET]
++ Response 200 (application/json)
+
+        [{
+          "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486"
+        }, {
+          "id": "TO15-036327", "info": "Start ZWIJNDRECHT-Out KALO-Unload ZAVENTEM", "reference": "SMJ/RAU/88369/25069"
+        }]
+
+### Search for specific PlanningBlocks [GET /planningBlocks{?startDate,endDate,group,zone,status}]
++ Parameters
+    + startDate (required, number, `20150912`) ... The `startDate` to search for TransportOrders given a certain `status`.
+    + endDate (required, number, `20150915`) ... The `endDate` to search for TransportOrders given a certain `status`. 
+    + group (optional, string, `all`) ... Specify a `group` to limit the search for TransportOrders. Default value is:`all`.
+    + zone (optional, string, `north`) ... Specify a `zone` to limit the search for TransportOrders. Default value is:`belgium`.
+    + status (optional, enum[string])
+        Specify the status of the TransportOrders for the search. Default value is `unassigned`
+        + Default: `planned`
+        + Members
+            + `created`
+            + `toPlan`
+            + `prePlan`
+            + `planned`
+            + `inProgress`
+            + `closed`
+
++ Response 200 (application/json)
+
+        [{
+          "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486"
+        }, {
+          "id": "TO15-036327", "info": "Start ZWIJNDRECHT-Out KALO-Unload ZAVENTEM", "reference": "SMJ/RAU/88369/25069"
+        }]
+
+### Create a PlanningBlock [POST]
++ Request (application/json)
+
+        { "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
++ Response 201 (application/json)
+
+        { "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
+
+## PlanningBlock [/planningBlocks/{id}]
++ Parameters
+    + id (required, string, `TO15-036568`) ... The `id` of the PlanningBlock to perform action with. 
+
+### Retrieve a PlanningBlock [GET]
++ Response 200 (application/json)
+
+        { "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
+### Update a PlanningBlock [PUT]
++ Request (application/json)
+
+        { "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
++ Response 200
+
+        { "id": "TO15-036568", "info": "Start ZWIJNDRECHT-Load BURCHT-Unload ZAVENTEM", "reference": "320023967-135486" }
+
+### Plan a PlanningBlock [POST /planningBlocks/{id}/plan]
++ Request (application/json)
+
+        { "truckAndDriverId": "2", "transportOrderId": "TO15-036568" }
+
++ Response 202
+
+    > ***developer tip:*** perhaps it is interesting to add asynchronous support. The plan operation would return a 204 with a Location URI pointing to a progress resource where one can check the status of the plan action. 
+
+    + Headers
+    
+            Content-Type: text/html; charset=utf-8
+            Location: /planningBlocks/1/checkProgress
+
++ Response 204
+
+### Check PlanningBlock progress [POST /planningBlocks/{id}/progress]
++ Response 200
+
+        There's still an action in progress for the given planningBlock
+
++ Response 201
+
+    The action on the given planningBlock is finished
+
+    + Headers
+    
+            Content-Type: text/html; charset=utf-8
+            Location: /planningBlocks/1/checkProgress
+
+### Unplan a PlanningBlock [POST /planningBlocks/{id}/unplan]
++ Response 204
+
+### Send PlanningBlock  [POST /planningBlocks/{id}/send]
++ Request (application/json)
+        
+        { "truckAndDriverId": "2", "haulierId": "4" }
+
++ Response 204
+
+### Recall PlanningBlock  [POST /planningBlocks/{id}/recall]
++ Response 204
+
+### Remove a PlanningBlock [DELETE]
++ Response 204
+
+# Group Automation & Extensions
+
+## Wizards Collection [/wizards]
+Wizards are (customer) specific extensions that typically combine multiple actions into one wizard.
+
+### {Preliminary} - List all Wizards [GET]
++ Response 200 (application/json)
+
+        [{
+          "id": 1, "description": "This wizard performs...", "context": "TransportOrder"
+        }, {
+          "id": 2, "description": "This wizard performs...", "context": "PlanningBlock"
+        }]
+
+### Search for Wizards [GET /wizards{?transportOrderId,planningBlockId}]
++ Parameters
+    + transportOrderId (optional, string, `TO15-036568`) ... Searches for Wizards for the given `transportOrderId`.
+    + planningBlockId (optional, string, `4`) ... Searches for Wizards for the given `planningBlockId`.
+
++ Response 400 (application/json)
+
+        [{
+          "status": 400, "code":"A35SHZ6E", "message": "You can either use the transportOrderId or the planningBlockId but not both in the same request", "moreInfo": "http://www.example.com/errorcodes/A35SHZ6E"
+        }]
+
+
++ Response 200 (application/json)
+
+        [{
+          "id": 2, "description": "This wizard performs...", "context": "PlanningBlock"
+        }]
+
+
+## Wizard [/wizards/{id}]
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Wizard to perform action with. 
+
+### Retrieve a Wizard [GET]
++ Response 200 (application/json)
+
+        { "id": 1, "description": "This wizard performs...", "context": "TransportOrder" }
+
+### Execute Wizard [POST /wizards/{id}/execute]
++ Request (application/json)
+
+        { "address": "4", "shippingAddress": "4" }
+        
++ Response 204
+
+## WizardSteps [/wizards/{id}/steps]
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Wizard to perform action with. 
+
+### Retrieve WizardSteps [GET]
++ Response 200 (application/json)
+
+        [{
+          "id": 12, "description": "step 1", "requiredInput": "address"
+        },
+        {
+          "id": 13, "description": "step 2", "requiredInput": "nothing"
+        }]
